@@ -52,10 +52,10 @@ def vis_data():
 
 
 # initializing weights and bias
-w=np.zeros(X.shape[1])
+w = np.random.randn(X.shape[1]) * 0.01 
 b=np.random.uniform()
-lr=0.001
-lambda_=0.01
+lr=0.0005
+lambda_=0.001
 
 class Logistic_Regression():
     def __init__ (self,x,y,w,b,lr,lambda_):
@@ -77,7 +77,7 @@ class Logistic_Regression():
         self.cost_val=np.sum(-(self.y)*np.log(self.z+epsilon)+(1-self.y)*np.log(1-self.z+epsilon))/self.m
         return self.cost_val
     def regularaization(self):
-        self.cost_reg=self.cost_val + np.mean(self.lambda_*self.w)     
+        self.cost_reg=self.cost_val+(self.lambda_ / (2 * self.m)) * np.sum(self.w**2)     
         return self.cost_reg
     def update_weights_bias(self):
         d_w = np.dot((self.z - self.y),self.x) / self.m
@@ -88,9 +88,9 @@ class Logistic_Regression():
         self.b-=self.lr*d_b
     def regularaization_update_weights_bias(self):
         d_w = np.dot((self.z - self.y),self.x) / self.m
-        d_b=np.mean(np.sum(self.z-self.y))
-        self.w+=d_w+np.mean(self.lambda_*self.w)
-        self.b+=d_b    
+        d_b=np.mean(self.z-self.y)
+        self.w-= self.lr*d_w + self.lambda_ * self.w
+        self.b-=self.lr*d_b    
     def predict_newdata(self,x_new):
         self.ys=np.dot(x_new,w)+self.b
         self.z=1/(1+np.exp(-self.ys))
@@ -106,11 +106,13 @@ def train():
     for i in range(1000):
         obj.predict()
         obj.sigmoid()
-        n=obj.cost()
+        obj.cost()
+        n=obj.regularaization()
         print(n)
-        x_data.append(obj.cost())
+        x_data.append(n)
         y_data.append(i)
-        obj.update_weights_bias()
+        # obj.update_weights_bias()
+        obj.regularaization_update_weights_bias()
 
 train()
 # print(X.shape,w.shape)
@@ -125,8 +127,7 @@ vis_data()
 cost_graph()
 
 pre=obj.predict_newdata(X_test)
-c=0
-accuracy = np.mean(pre == Y_test.flatten()) * 100
+accuracy = np.mean(pre == Y_test) * 100
 print(f"Accuracy: {accuracy:.2f}%")
 
 
