@@ -23,12 +23,22 @@ Y_test=data_test.loc[:,["DEATH_EVENT"]]
 col_head=X.columns.values
 #converting to numpy
 X=X.to_numpy()
-X = (X - np.mean(X, axis=0)) / np.std(X, axis=0)
 Y=Y.to_numpy()
-X_test=X_test.to_numpy()
-X_test = (X_test - np.mean(X, axis=0)) / np.std(X_test, axis=0)
 Y_test=Y_test.to_numpy()
+X_test=X_test.to_numpy()
+
+# flattening to (239,) from (239,1)
+Y=Y.flatten()
 Y_test = Y_test.flatten() 
+
+X_mean=np.mean(X, axis=0)
+X_std=np.std(X, axis=0)
+
+X = (X - X_mean) / X_std
+
+X_test = (X_test - X_mean) / X_std
+
+
 
 
 
@@ -54,13 +64,13 @@ def vis_data():
 # initializing weights and bias
 w = np.random.randn(X.shape[1]) * 0.01 
 b=np.random.uniform()
-lr=0.0005
+lr=0.01
 lambda_=0.001
 
 class Logistic_Regression():
     def __init__ (self,x,y,w,b,lr,lambda_):
         self.x=x
-        self.y=y.flatten()
+        self.y=y
         self.w=w
         self.b=b
         self.lr=lr
@@ -111,16 +121,16 @@ def train():
         print(n)
         x_data.append(n)
         y_data.append(i)
-        # obj.update_weights_bias()
-        obj.regularaization_update_weights_bias()
+        obj.update_weights_bias()
+        # obj.regularaization_update_weights_bias()
 
 train()
 # print(X.shape,w.shape)
 def cost_graph():
     ax2.scatter(x_data,y_data,c="r")
     ax2.set_title("Cost vs iteration") 
-    ax2.set_ylabel("cost")
-    ax2.set_xlabel("iteration")
+    ax2.set_ylabel("iteration")
+    ax2.set_xlabel("cost")
         
         
 vis_data()
@@ -130,5 +140,12 @@ pre=obj.predict_newdata(X_test)
 accuracy = np.mean(pre == Y_test) * 100
 print(f"Accuracy: {accuracy:.2f}%")
 
+x_random=X_test[2]
+y_random=Y_test[2]
+x_random = (x_random- X_mean)/ X_std
+z=np.dot(x_random,obj.w)+obj.b
+g=1/(1+np.exp(-z))
 
-pt.show()    
+print(f"x:{x_random},y:{y_random},g:{g}")
+
+# pt.show()    
