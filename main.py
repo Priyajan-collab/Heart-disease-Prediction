@@ -140,12 +140,12 @@ pre=obj.predict_newdata(X_test)
 accuracy = np.mean(pre == Y_test) * 100
 print(f"Accuracy: {accuracy:.2f}%")
 
-x_random=X_test[2]
-y_random=Y_test[2]
-x_random = (x_random- X_mean)/ X_std
+x_random=X_test[15]
+y_random=Y_test[15]
+
 z=np.dot(x_random,obj.w)+obj.b
 g=1/(1+np.exp(-z))
 
 print(f"x:{x_random},y:{y_random},g:{g}")
 
-# pt.show()    
+pt.show()    
